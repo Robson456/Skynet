@@ -81,6 +81,9 @@ gra.Game.prototype = {
         sprite.y = 0-sprite.height/2;//nowa wylosowana pozycja y jest zawsze nad canvasem, tak, ze nas nie widac
         sprite.x = this.rnd.integerInRange(0+sprite.width/2, this.world.width-sprite.width/2);//funkcja losujaca
         //upgrade losownia pozycji wroga (przygotowanie do opsługi mobilnej)
+        if ( score >= 9){
+            g += 10
+        }
         if (sprite.x <= this.world.width/2){
             sprite.x = 160;
         }

@@ -1,0 +1,38 @@
+var gra = {
+    _WIDTH: 640,
+    _HEIGHT: 1136
+};
+
+//tutaj zmienne
+var bg;
+var bg2;
+var player;
+var enemy;
+var universeSpeed = 5;
+var enemySpeed = 10;
+var score  = 0;
+var text;
+var g = 35;
+//input memory, onDown and onUp
+var downX;
+var downY;
+var upX;
+var upY;
+//sound
+var sound;//soundOn, soundOff sprite
+var soundBuffor = 0; //1 gdy dzwiek wlaczony,0 gdy dzwiek wylaczony
+var music;
+//splashScene 
+var splashImage1;
+var tween;
+
+gra.Boot = function(game) {};
+gra.Boot.prototype = {
+
+    create: function() {
+        this.game.scale.scaleMode = Phaser.ScaleManager.SHOW_ALL;
+        this.game.scale.pageAlignHorizontally = true;
+        this.game.scale.pageAlignVertically = true;
+        this.game.state.start('Preload');
+    }
+};

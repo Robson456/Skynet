@@ -1,0 +1,9 @@
+- popraic spadanie asteroid (za szybko gra staje sie zbyt trudna, a moze tak ma byc? => obgadac)
+- menu
+- kolizja (uruchomienie animacji i pokazanie wyniku)
+- dodac obsluge on tap, slide
+- po przegranej wyswietlenie wyniku i przejscie do menu 
+- local storage zapis najlepszego wyniku
+- intro do gry (historia(juz jest) lub animacja?)
+- muzyka(zmodyfikowac dzwiek)
+- animacje(spaceship in progress, dodac rozciaganie?)

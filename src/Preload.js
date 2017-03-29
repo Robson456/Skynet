@@ -11,7 +11,7 @@ gra.Preload.prototype = {
         this.load.image('soundOff','img/soundOff.png');
         this.load.spritesheet('player','img/shipAnimation.png', 102 , 284 , 3);
         this.load.audio('musicUniverse', 'assets/sound.mp3');
-
+        this.load.image('coin','img/star.png');
 },
     create: function() {
         this.state.start('Game');

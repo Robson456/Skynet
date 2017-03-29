@@ -26,6 +26,12 @@ gra.Game.prototype = {
         enemy.body.immovable = true;
         enemy.scale.setTo(0.2);
         enemy.anchor.setTo(0.5);
+    //ustawienia dla coina
+        coin = this.add.sprite(160, 100,'coin');
+        this.physics.arcade.enable(coin);
+        enemy.enableBody = true;
+        coin.scale.setTo(0.1);
+        coin.anchor.setTo(0.5);
         
     //poczatkowe ustawienia dla gracza
         player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod
@@ -53,7 +59,8 @@ gra.Game.prototype = {
     
     update: function() {       
         this.physics.arcade.collide(enemy, player, this.collisionHandler, null, this);
-
+        
+        this.zbieranieCoina(coin);
         this.wyswietlaniePunktow(score);
         this.poruszanieTla(bg); 
         this.playerMove(player);    
@@ -148,5 +155,18 @@ gra.Game.prototype = {
            soundBuffor = 1;
            music.play('', 0, 1, true);
       }     
+    },
+    zbieranieCoina: function(coin){
+        coin.body.velocity.y = 500;
+        if (coin.y >= player.y && coin.x == player.x || coin.y >= this.world.height){
+            coin.y = 0-coin.height/2;//nowa wylosowana pozycja y jest zawsze nad canvasem, tak, ze nas nie widac
+            coin.x = this.rnd.integerInRange(0+coin.width/2, this.world.width-coin.width/2);//funkcja losujaca
+            if (coin.x <= this.world.width/2){
+                coin.x = 160;
+            }else{
+                coin.x = 480;
+            }
+            
+        }
     }
 }

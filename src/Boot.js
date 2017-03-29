@@ -12,6 +12,7 @@ var universeSpeed = 5;
 var enemySpeed = 10;
 var score  = 0;
 var text;
+var tapToStart;
 var g = 35;
 //input memory, onDown and onUp
 var downX;
@@ -26,6 +27,10 @@ var music;
 //splashScene 
 var splashImage1;
 var tween;
+//menu staff, czy wlaczone itp.
+var menuWlaczone = true;
+var checkIfEnemyCreated = false;//sprawdzamy czy wrog jest stworzony, funkcja wykonuje sie w update, w menu obiekt jest zabijany
+var checkIfScreenWasTouchedInMenu = false;//zmiana na true powoduje wlaczenie gry wlasciwej
 
 gra.Boot = function(game) {};
 gra.Boot.prototype = {

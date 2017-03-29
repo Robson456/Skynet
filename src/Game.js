@@ -18,15 +18,17 @@ gra.Game.prototype = {
         sound.scale.setTo(0.35);
         sound.inputEnabled = true;
   
-
+    
     //poczatkowe ustawienia dla obiektu wroga
+    /*
         enemy = this.add.sprite(160, -100, 'enemy');
         this.physics.arcade.enable(enemy);
         enemy.enableBody = true;
         enemy.body.immovable = true;
         enemy.scale.setTo(0.2);
         enemy.anchor.setTo(0.5);
-        
+
+    */    
     //poczatkowe ustawienia dla gracza
         player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod
         this.physics.arcade.enable(player);
@@ -37,6 +39,9 @@ gra.Game.prototype = {
         player.anchor.setTo(0.5);
         flying = player.animations.add('flying');
         player.animations.play('flying', 21 , true);
+    //napis w menu- tap to start the game
+        tapToStart = this.add.sprite(this.world.width/2, this.world.height/2, 'tapToStart');
+        tapToStart.anchor.setTo(0.5);
     //wyswietlnie punktow- txt label
         text = this.add.text(this.world.width/2, 80);
         text.text = score;
@@ -47,20 +52,39 @@ gra.Game.prototype = {
         text.fill = '#FFFFFF';
         text.setShadow(2, -2, 'rgba(0,0,0,0.75)', 0);
     //music
-         music = this.add.audio('musicUniverse');
-         music.stop();
+        music = this.add.audio('musicUniverse');
+        music.stop();
+        //wlaczenie i wylaczenie dzwieku
+        sound.events.onInputDown.add(this.listener, this);
     },
     
     update: function() {       
-        this.physics.arcade.collide(enemy, player, this.collisionHandler, null, this);
-
-        this.wyswietlaniePunktow(score);
+        
+        this.physics.arcade.collide(enemy, player, this.collisionHandler, null, this);    
         this.poruszanieTla(bg); 
-        this.playerMove(player);    
-        this.enemiesMove(enemy);
+        
+        //sprawdzamy, czy podczas gdy menu jest wlaczone, zostalo wykonanie tapniecie, jesli tak, to wychodzimy z menu
+        if(menuWlaczone === true && this.game.input.pointer1.isDown === true || this.input.activePointer.leftButton.isDown === true){
+            menuWlaczone = false;//i zaczynamy grac w gre wlasciwa
+        }
 
-        //wlaczenie i wylaczenie dzwieku
-        sound.events.onInputDown.add(this.listener, this);
+        //sprawdzamy czy menu jest wlaczone, czy nie i wykonujemy odpowiednie operacje
+        if (menuWlaczone === false){//kiedy menu nie jest wlaczone, czyli gra wlasciwa juz dziala
+//wylaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje
+            tapToStart.visible = false;// wylaczamu widocznosc napisu z menu "Tap to start the game"
+            sound.visible = false;
+            //zerujemy score
+
+            //glowne funkcje gry
+            this.playerMove(player);    
+            this.wyswietlaniePunktow(score);
+            this.createEnemy();//wykonuje sie tylko gdy obiekt nie istnieje
+            this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
+        } else {//kiedy menu jest wlaczone i gra wlasciwa nie jest wlaczona
+//wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje
+            tapToStart.visible = true;//wlaczamy napis "Tap to start the game"" w menu
+            sound.visible = true;
+        }
         
     },
 
@@ -74,14 +98,13 @@ gra.Game.prototype = {
             this.losowaniePozycjiWroga(sprite);//kiedy jestesmy nizej, niz wysokosc ekranu, to pojawia sie u gory jeszcze raz(asteroida) 
             score += 1;
         }
-
     },
     losowaniePozycjiWroga: function(sprite){
         sprite.body.velocity.y = g;
         sprite.y = 0-sprite.height/2;//nowa wylosowana pozycja y jest zawsze nad canvasem, tak, ze nas nie widac
         sprite.x = this.rnd.integerInRange(0+sprite.width/2, this.world.width-sprite.width/2);//funkcja losujaca
         //upgrade losownia pozycji wroga (przygotowanie do opsługi mobilnej)
-        if ( score >= 9){
+        if (score >= 9){
             g += 10
         }
         if (sprite.x <= this.world.width/2){
@@ -89,7 +112,8 @@ gra.Game.prototype = {
         }
         else{
             sprite.x = 480;
-        }
+        }    
+    
     },
     playerMove: function(sprite){
         //obsluga dla komputera(sterowanie)
@@ -133,11 +157,14 @@ gra.Game.prototype = {
     wyswietlaniePunktow: function(pkt){
        text.text = pkt;
     },
-    collisionHandler: function(){
+    collisionHandler: function(){//tutaj przechodzimy do menu zmieniajac zmienna menuWlaczone na true i wlaczajac odpowiednie animacje, oraz resetujac inne parametry
         this.camera.shake(0.025, 100);
-        console.log("kolizja!");
+        //nisczymy obiekt wroga i wlaczamy menu
+        this.destroyEnemy(enemy);
+        menuWlaczone = true;
+
     },
-    listener: function(){
+    listener: function(){//ta funkcja "slucha" czy nie zostal klkniety guzik od wyciszania i wlaczania dzwiekow
       if(soundBuffor === 1){//muzyka wlaczona
            sound.loadTexture('soundOff');
            soundBuffor = 0;
@@ -148,5 +175,25 @@ gra.Game.prototype = {
            soundBuffor = 1;
            music.play('', 0, 1, true);
       }     
+    },
+    createEnemy: function(){//tworzymy obiekt wroga, kiedy wyjdziemy z menu po uderzeniu w ekran
+        if(checkIfEnemyCreated === false){
+            score = 0; //zerujemy wynik z ewentualnej poprzedniej rozgrywki, dlatego tutaj, bo ta funkcja wlacza sie raz, zaraz po rozpoczeciu rozgrywi od nowa
+
+            enemy = this.add.sprite(160, -100, 'enemy');
+            this.physics.arcade.enable(enemy);
+            enemy.enableBody = true;
+            enemy.body.immovable = true;
+            enemy.scale.setTo(0.2);
+            enemy.anchor.setTo(0.5);
+
+            checkIfEnemyCreated = true;//ta wartosc zmieniamy na false podczas kolizji z obiektem i wlaczeniem spowrotem menu
+        }
+    },
+    destroyEnemy: function(sprite){//niszczymy obiekt wroga przy uruchomieniu menu
+        if(menuWlaczone === true && checkIfEnemyCreated === true){
+            sprite.destroy();
+            checkIfEnemyCreated = false;
+        }
     }
 }

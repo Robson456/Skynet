@@ -31,11 +31,13 @@ gra.Game.prototype = {
     */    
 
     //ustawienia dla coina
-        coin = this.add.sprite(160, 100,'coin');
+        coin = this.add.sprite(160, -100 ,'coin');
         this.physics.arcade.enable(coin);
         //enemy.enableBody = true;
         coin.scale.setTo(0.1);
         coin.anchor.setTo(0.5);
+        rotating = coin.animations.add('rotating');
+        coin.animations.play('rotating',10, true);
         
     //poczatkowe ustawienia dla gracza
         player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod

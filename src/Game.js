@@ -13,32 +13,22 @@ gra.Game.prototype = {
         bg2.anchor.setTo(0.5, 0);
 
     //guziki od dzwieku
-        sound = this.add.sprite((this.world.width*6)/7, this.world.height - 70, 'soundOff');
+        sound = this.add.sprite((this.world.width*6)/7, 70, 'soundOff');
         sound.anchor.setTo(0.5);
         sound.scale.setTo(0.35);
         sound.inputEnabled = true;
   
-    
-    //poczatkowe ustawienia dla obiektu wroga
-    /*
-        enemy = this.add.sprite(160, -100, 'enemy');
-        this.physics.arcade.enable(enemy);
-        enemy.enableBody = true;
-        enemy.body.immovable = true;
-        enemy.scale.setTo(0.2);
-        enemy.anchor.setTo(0.5);
-
-    */    
-
     //ustawienia dla coina
         coin = this.add.sprite(160, -100 ,'coin');
         this.physics.arcade.enable(coin);
-        //enemy.enableBody = true;
+        coin.enableBody = true;
+        coin.body.immovable = true;
         coin.scale.setTo(0.1);
         coin.anchor.setTo(0.5);
         rotating = coin.animations.add('rotating');
         coin.animations.play('rotating',10, true);
-        
+        coin.body.gravity.y = universeSpeed;
+
     //poczatkowe ustawienia dla gracza
         player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod
         this.physics.arcade.enable(player);
@@ -53,7 +43,7 @@ gra.Game.prototype = {
         tapToStart = this.add.sprite(this.world.width/2, this.world.height/2, 'tapToStart');
         tapToStart.anchor.setTo(0.5);
     //wyswietlnie punktow- txt label
-        text = this.add.text(this.world.width/2, 80);
+        text = this.add.text(90, 80);
         text.text = score;
         text.anchor.setTo(0.5);
         text.font = 'Impact';
@@ -66,6 +56,9 @@ gra.Game.prototype = {
         music.stop();
         //wlaczenie i wylaczenie dzwieku
         sound.events.onInputDown.add(this.listener, this);
+
+    //przesuniecie statku
+        //tween = this.add.tween(splashImage1).to( { alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
     },
     
     update: function() {   
@@ -73,20 +66,21 @@ gra.Game.prototype = {
         this.physics.arcade.collide(enemy, player, this.collisionHandler, null, this);    
         this.poruszanieTla(bg); 
    
-
         //sprawdzamy, czy podczas gdy menu jest wlaczone, zostalo wykonanie tapniecie, jesli tak, to wychodzimy z menu
-        if(menuWlaczone === true && this.game.input.pointer1.isDown === true || this.input.activePointer.leftButton.isDown === true){
+        if(menuWlaczone === true && this.game.input.pointer1.isDown === true  ||  this.input.activePointer.leftButton.isDown === true){
             menuWlaczone = false;//i zaczynamy grac w gre wlasciwa
         }
 
         //sprawdzamy czy menu jest wlaczone, czy nie i wykonujemy odpowiednie operacje
         if (menuWlaczone === false){//kiedy menu nie jest wlaczone, czyli gra wlasciwa juz dziala
-//wylaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje
+//wylaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = false;// wylaczamu widocznosc napisu z menu "Tap to start the game"
             sound.visible = false;
-                    
+            
+//tutaj piszemy to co dzieje sie w grze
+            //this.zbieranieCoina(coin);
 
-            this.zbieranieCoina(coin);
+
 
             //glowne funkcje gry
             this.playerMove(player);    
@@ -94,7 +88,7 @@ gra.Game.prototype = {
             this.createEnemy();//wykonuje sie tylko gdy obiekt nie istnieje
             this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
         } else {//kiedy menu jest wlaczone i gra wlasciwa nie jest wlaczona
-//wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje
+//wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = true;//wlaczamy napis "Tap to start the game"" w menu
             sound.visible = true;
         }
@@ -131,9 +125,14 @@ gra.Game.prototype = {
     playerMove: function(sprite){
         //obsluga dla komputera(sterowanie)
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
-            sprite.x = 160;//zamienic na ease funkction
+            if(sprite.x === 480){
+                movingShipLeft = this.add.tween(sprite).to( { x: 160 }, 500,  Phaser.Easing.Linear.None, true);
+            }
+
         }else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
-            sprite.x = 480;
+            if(sprite.x === 160){
+                movingShipRight = this.add.tween(sprite).to( { x: 480 }, 500, Phaser.Easing.Linear.None, true);
+            }
         }
 
         //obsluga urzadzen mobilnych
@@ -146,9 +145,13 @@ gra.Game.prototype = {
             upX = this.game.input.x;
             //tutaj przemieszczenie(zamienic na ease function)
             if(downX - upX < 0){//wtedy minus->czyli idziemy w prawo
-                sprite.x = 480;//zamienic na ease function
+                if(sprite.x === 160){
+                    movingShipRight = this.add.tween(sprite).to( { x: 480 }, 500, Phaser.Easing.Linear.None, true);
+                }
             }else if(downX - upX > 0){//wtedy idziemy w lewo
-                sprite.x = 160;
+                if(sprite.x === 480){
+                    movingShipLeft = this.add.tween(sprite).to( { x: 160 }, 500,  Phaser.Easing.Linear.None, true);
+                }
             }
 
             wasScreenTapped = false;
@@ -210,7 +213,7 @@ gra.Game.prototype = {
          }
     },
     zbieranieCoina: function(coin){
-        coin.body.velocity.y = 500;
+        //coin.body.velocity.y = 500;
         if (coin.y >= player.y && coin.x == player.x || coin.y >= this.world.height){
             coin.y = 0-coin.height/2;//nowa wylosowana pozycja y jest zawsze nad canvasem, tak, ze nas nie widac
             coin.x = this.rnd.integerInRange(0+coin.width/2, this.world.width-coin.width/2);//funkcja losujaca
@@ -220,5 +223,10 @@ gra.Game.prototype = {
                 coin.x = 480;
             }
         }
+    },
+    testowanie: function(){
+
+        console.log("test");
     }
+
 }

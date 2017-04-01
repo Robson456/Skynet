@@ -18,7 +18,7 @@ gra.Game.prototype = {
         sound.scale.setTo(0.35);
         sound.inputEnabled = true;  
     //ikona coina obok licznika
-        smallCoin = this.add.sprite(250,76, 'smallCoin')
+        smallCoin = this.add.sprite(60,76, 'smallCoin')
         smallCoin.anchor.setTo(0.5);
         smallCoin.scale.setTo(0.08)
 
@@ -42,15 +42,13 @@ gra.Game.prototype = {
         text.font = 'Arial';
         text.fontSize = 30;
         text.fill = '#FFFFFF';
-        text.setShadow(2, -2, 'rgba(0,0,0,0.75)', 0);
     //wyswietlanie ilosci monet
-        napis = this.add.text(this.world.width/2, 80);
-        napis.text = cash;
-        napis.anchor.setTo(0.5);
-        napis.font = 'Impact';
-        napis.fontSize = 60;
-
-        napis.fill = '#FFFFFF'
+        coinAmountLabel = this.add.text(100, 80);
+        coinAmountLabel.text = cash;
+        coinAmountLabel.anchor.setTo(0.5);
+        coinAmountLabel.font = 'Arial';
+        coinAmountLabel.fontSize = 30;
+        coinAmountLabel.fill = '#FFFFFF'
     //music
         music = this.add.audio('musicUniverse');
         music.stop();
@@ -184,7 +182,7 @@ gra.Game.prototype = {
         distanceParsecOld = distanceParsecNew;
     },
     iloscMonet: function(ilosc){
-        napis.text =  ilosc;
+        coinAmountLabel.text =  ilosc;
     },
     collisionHandler: function(){//tutaj przechodzimy do menu zmieniajac zmienna menuWlaczone na true i wlaczajac odpowiednie animacje, oraz resetujac inne parametry
         this.camera.shake(0.025, 100);

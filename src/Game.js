@@ -17,6 +17,10 @@ gra.Game.prototype = {
         sound.anchor.setTo(0.5);
         sound.scale.setTo(0.35);
         sound.inputEnabled = true;  
+    //ikona coina obok licznika
+        smallCoin = this.add.sprite(250,76, 'smallCoin')
+        smallCoin.anchor.setTo(0.5);
+        smallCoin.scale.setTo(0.08)
 
     //poczatkowe ustawienia dla gracza
         player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod
@@ -40,6 +44,14 @@ gra.Game.prototype = {
 
         text.fill = '#FFFFFF';
         text.setShadow(2, -2, 'rgba(0,0,0,0.75)', 0);
+    //wyswietlanie ilosci monet
+        napis = this.add.text(this.world.width/2, 80);
+        napis.text = cash;
+        napis.anchor.setTo(0.5);
+        napis.font = 'Impact';
+        napis.fontSize = 60;
+
+        napis.fill = '#FFFFFF'
     //music
         music = this.add.audio('musicUniverse');
         music.stop();
@@ -75,6 +87,7 @@ gra.Game.prototype = {
             this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
             this.physics.arcade.collide(player, coins, this.coinCollisionHandler);
             this.destroyCoins();
+            this.iloscMonet(cash);
         
          } else {//kiedy menu jest wlaczone i gra wlasciwa nie jest wlaczona
 //wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
@@ -92,7 +105,7 @@ gra.Game.prototype = {
         sprite.y += enemySpeed;
         if(sprite.y >= this.world.height){
             this.losowaniePozycjiWroga(sprite);//kiedy jestesmy nizej, niz wysokosc ekranu, to pojawia sie u gory jeszcze raz(asteroida) 
-            score += 1;
+            score +=  1;
         }
     },
     losowaniePozycjiWroga: function(sprite){
@@ -162,6 +175,9 @@ gra.Game.prototype = {
     wyswietlaniePunktow: function(pkt){
        text.text = pkt;
     },
+    iloscMonet: function(ilosc){
+        napis.text =  ilosc;
+    },
     collisionHandler: function(){//tutaj przechodzimy do menu zmieniajac zmienna menuWlaczone na true i wlaczajac odpowiednie animacje, oraz resetujac inne parametry
         this.camera.shake(0.025, 100);
         //nisczymy obiekt wroga i wlaczamy menu
@@ -184,6 +200,7 @@ gra.Game.prototype = {
     createEnemy: function(){//tworzymy obiekt wroga, kiedy wyjdziemy z menu po uderzeniu w ekran
         if(checkIfEnemyCreated === false){
             score = 0; //zerujemy wynik z ewentualnej poprzedniej rozgrywki, dlatego tutaj, bo ta funkcja wlacza sie raz, zaraz po rozpoczeciu rozgrywi od nowa
+            cash = 0 ;
 
             enemy = this.add.sprite(160, -100, 'enemy');
             this.physics.arcade.enable(enemy);
@@ -227,6 +244,7 @@ gra.Game.prototype = {
     },
     coinCollisionHandler: function(player, coins){//wykrywa kolizje gracza z coinami
         coins.destroy();
+        cash += 1;
 //tutaj animacje znikania coinow i dzwieki ich podnoszenia
     }
 }

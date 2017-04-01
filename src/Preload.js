@@ -4,7 +4,6 @@ gra.Preload.prototype = {
     preload: function() {
         //sprite statyczne(nie animowane)
         this.load.image('enemy', 'img/stone.png');
-        //this.load.image('player', 'img/ship.png');
         this.load.image('bg', 'img/bg.png');  
         this.load.image('bg2', 'img/bg2.png');
         this.load.image('splash1', 'img/splashImage1.png');
@@ -16,7 +15,6 @@ gra.Preload.prototype = {
         this.load.spritesheet('player','img/shipAnimation.png', 102 , 284 , 3);
         //dzwieki
         this.load.audio('musicUniverse', 'assets/sound.mp3');
-        //this.load.image('coin','img/star.png');
 },
     create: function() {
         this.state.start('Game');

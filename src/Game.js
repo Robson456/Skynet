@@ -16,18 +16,7 @@ gra.Game.prototype = {
         sound = this.add.sprite((this.world.width*6)/7, 70, 'soundOff');
         sound.anchor.setTo(0.5);
         sound.scale.setTo(0.35);
-        sound.inputEnabled = true;
-  
-    //ustawienia dla coina
-        coin = this.add.sprite(160, -100 ,'coin');
-        this.physics.arcade.enable(coin);
-        coin.enableBody = true;
-        coin.body.immovable = true;
-        coin.scale.setTo(0.1);
-        coin.anchor.setTo(0.5);
-        rotating = coin.animations.add('rotating');
-        coin.animations.play('rotating',10, true);
-        coin.body.gravity.y = universeSpeed;
+        sound.inputEnabled = true;  
 
     //poczatkowe ustawienia dla gracza
         player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod
@@ -56,9 +45,9 @@ gra.Game.prototype = {
         music.stop();
         //wlaczenie i wylaczenie dzwieku
         sound.events.onInputDown.add(this.listener, this);
-
-    //przesuniecie statku
-        //tween = this.add.tween(splashImage1).to( { alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0, 1000, true);
+    
+        coins = this.add.group();
+	    this.time.events.loop(500, this.spawnCoin, this);
     },
     
     update: function() {   
@@ -79,8 +68,7 @@ gra.Game.prototype = {
             
 //tutaj piszemy to co dzieje sie w grze
             //this.zbieranieCoina(coin);
-
-
+            
 
             //glowne funkcje gry
             this.playerMove(player);    
@@ -216,7 +204,7 @@ gra.Game.prototype = {
         //coin.body.velocity.y = 500;
         if (coin.y >= player.y && coin.x == player.x || coin.y >= this.world.height){
             coin.y = 0-coin.height/2;//nowa wylosowana pozycja y jest zawsze nad canvasem, tak, ze nas nie widac
-            coin.x = this.rnd.integerInRange(0+coin.width/2, this.world.width-coin.width/2);//funkcja losujaca
+            coin.x = this.rnd.integerInRange(coin.width/2, this.world.width-coin.width/2);//funkcja losujaca
             if (coin.x <= this.world.width/2){
                 coin.x = 160;
             }else{
@@ -224,9 +212,19 @@ gra.Game.prototype = {
             }
         }
     },
-    testowanie: function(){
-
-        console.log("test");
-    }
-
+    spawnCoin: function(){
+        var random = this.rnd.integerInRange(0, 1);
+        if(random === 0)
+            coin = this.add.sprite(160, -100 ,'coin', 1);
+        else
+            coin = this.add.sprite(480, -100 ,'coin', 1);
+        
+        this.physics.arcade.enable(coin);
+        coin.enableBody = true;
+        coin.scale.setTo(0.1);
+        coin.anchor.setTo(0.5);
+        rotating = coin.animations.add('rotating');
+        coin.animations.play('rotating',10, true);
+        coin.body.gravity.y = universeSpeed;
+   }
 }

@@ -13,6 +13,7 @@ var enemySpeed = 10;
 var score  = 0;
 var text;
 var tapToStart;
+var coin;
 var g = 35;
 //input memory, onDown and onUp
 var downX;

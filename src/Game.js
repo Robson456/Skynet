@@ -135,11 +135,11 @@ gra.Game.prototype = {
             //tutaj przemieszczenie(zamienic na ease function)
             if(downX - upX < 0){//wtedy minus->czyli idziemy w prawo
                 if(sprite.x === 160){
-                    movingShipRight = this.add.tween(sprite).to( { x: 480 }, 500, Phaser.Easing.Linear.None, true);
+                    movingShipRight = this.add.tween(sprite).to( { x: 480 }, zwrotnosc, Phaser.Easing.Linear.None, true);
                 }
             }else if(downX - upX > 0){//wtedy idziemy w lewo
                 if(sprite.x === 480){
-                    movingShipLeft = this.add.tween(sprite).to( { x: 160 }, 500,  Phaser.Easing.Linear.None, true);
+                    movingShipLeft = this.add.tween(sprite).to( { x: 160 }, zwrotnosc,  Phaser.Easing.Linear.None, true);
                 }
             }
 

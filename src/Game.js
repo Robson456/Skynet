@@ -67,15 +67,16 @@ gra.Game.prototype = {
             sound.visible = false;
             
 //tutaj piszemy to co dzieje sie w grze
-            //this.zbieranieCoina(coin);
-            
 
             //glowne funkcje gry
             this.playerMove(player);    
             this.wyswietlaniePunktow(score);
             this.createEnemy();//wykonuje sie tylko gdy obiekt nie istnieje
             this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
-        } else {//kiedy menu jest wlaczone i gra wlasciwa nie jest wlaczona
+            this.physics.arcade.collide(player, coins, this.coinCollisionHandler);
+            this.destroyCoins();
+        
+         } else {//kiedy menu jest wlaczone i gra wlasciwa nie jest wlaczona
 //wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = true;//wlaczamy napis "Tap to start the game"" w menu
             sound.visible = true;
@@ -114,12 +115,12 @@ gra.Game.prototype = {
         //obsluga dla komputera(sterowanie)
         if (this.input.keyboard.isDown(Phaser.Keyboard.LEFT)){
             if(sprite.x === 480){
-                movingShipLeft = this.add.tween(sprite).to( { x: 160 }, 500,  Phaser.Easing.Linear.None, true);
+                movingShipLeft = this.add.tween(sprite).to( { x: 160 }, zwrotnosc,  Phaser.Easing.Linear.None, true);
             }
 
         }else if (this.input.keyboard.isDown(Phaser.Keyboard.RIGHT)){
             if(sprite.x === 160){
-                movingShipRight = this.add.tween(sprite).to( { x: 480 }, 500, Phaser.Easing.Linear.None, true);
+                movingShipRight = this.add.tween(sprite).to( { x: 480 }, zwrotnosc, Phaser.Easing.Linear.None, true);
             }
         }
 
@@ -200,24 +201,12 @@ gra.Game.prototype = {
             checkIfEnemyCreated = false;
          }
     },
-    zbieranieCoina: function(coin){
-        //coin.body.velocity.y = 500;
-        if (coin.y >= player.y && coin.x == player.x || coin.y >= this.world.height){
-            coin.y = 0-coin.height/2;//nowa wylosowana pozycja y jest zawsze nad canvasem, tak, ze nas nie widac
-            coin.x = this.rnd.integerInRange(coin.width/2, this.world.width-coin.width/2);//funkcja losujaca
-            if (coin.x <= this.world.width/2){
-                coin.x = 160;
-            }else{
-                coin.x = 480;
-            }
-        }
-    },
     spawnCoin: function(){
         var random = this.rnd.integerInRange(0, 1);
         if(random === 0)
-            coin = this.add.sprite(160, -100 ,'coin', 1);
+            coin = this.add.sprite(160, -100 ,'coin', 0);
         else
-            coin = this.add.sprite(480, -100 ,'coin', 1);
+            coin = this.add.sprite(480, -100 ,'coin', 0);
         
         this.physics.arcade.enable(coin);
         coin.enableBody = true;
@@ -226,5 +215,18 @@ gra.Game.prototype = {
         rotating = coin.animations.add('rotating');
         coin.animations.play('rotating',10, true);
         coin.body.gravity.y = universeSpeed;
-   }
+
+        coins.add(coin);
+   },
+    destroyCoins: function(){//niszczy obiekty coinow, ktore docieraja do konca tla
+        coins.forEach(function(object) {
+            if(object.y >= this.world.height) {
+                object.destroy();
+            }
+        }, this);
+    },
+    coinCollisionHandler: function(player, coins){//wykrywa kolizje gracza z coinami
+        coins.destroy();
+//tutaj animacje znikania coinow i dzwieki ich podnoszenia
+    }
 }

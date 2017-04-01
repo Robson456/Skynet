@@ -15,6 +15,8 @@ var text;
 var tapToStart;
 var coin;
 var g = 35;
+var distanceParsecOld = 0;
+var distanceParsecNew = 0;
 //input memory, onDown and onUp
 var downX;
 var upX;
@@ -31,7 +33,7 @@ var tween;
 var menuWlaczone = true;
 var checkIfEnemyCreated = false;//sprawdzamy czy wrog jest stworzony, funkcja wykonuje sie w update, w menu obiekt jest zabijany
 var checkIfScreenWasTouchedInMenu = false;//zmiana na true powoduje wlaczenie gry wlasciwej
-//od rakiet
+//do rakiet
 var zwrotnosc = 300;//parametr szybkosci przesuniecia statku
 gra.Boot = function(game) {};
 gra.Boot.prototype = {

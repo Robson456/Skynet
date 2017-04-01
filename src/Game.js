@@ -13,7 +13,7 @@ gra.Game.prototype = {
         bg2.anchor.setTo(0.5, 0);
 
     //guziki od dzwieku
-        sound = this.add.sprite((this.world.width*6)/7, 70, 'soundOff');
+        sound = this.add.sprite(100, this.world.height - 70, 'soundOff');
         sound.anchor.setTo(0.5);
         sound.scale.setTo(0.35);
         sound.inputEnabled = true;  
@@ -32,12 +32,11 @@ gra.Game.prototype = {
         tapToStart = this.add.sprite(this.world.width/2, this.world.height/2, 'tapToStart');
         tapToStart.anchor.setTo(0.5);
     //wyswietlnie punktow- txt label
-        text = this.add.text(90, 80);
-        text.text = score;
+        text = this.add.text(440, 80);
+        text.text = "distance in parsec: 0";
         text.anchor.setTo(0.5);
-        text.font = 'Impact';
-        text.fontSize = 60;
-
+        text.font = 'Arial';
+        text.fontSize = 30;
         text.fill = '#FFFFFF';
         text.setShadow(2, -2, 'rgba(0,0,0,0.75)', 0);
     //music
@@ -70,7 +69,7 @@ gra.Game.prototype = {
 
             //glowne funkcje gry
             this.playerMove(player);    
-            this.wyswietlaniePunktow(score);
+            this.wyswietlaniePrzebytejOdleglosci();
             this.createEnemy();//wykonuje sie tylko gdy obiekt nie istnieje
             this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
             this.physics.arcade.collide(player, coins, this.coinCollisionHandler);
@@ -159,8 +158,17 @@ gra.Game.prototype = {
             bg2.y = -bg2.y;
         }
     },
-    wyswietlaniePunktow: function(pkt){
-       text.text = pkt;
+    wyswietlaniePrzebytejOdleglosci: function(){
+
+        distanceParsecNew += 1;
+
+        var pointsTween = this.add.tween(this);
+		pointsTween.to({ distanceParsecOld: distanceParsecNew }, 1000, Phaser.Easing.Linear.None, true, 500);
+		pointsTween.onUpdateCallback(function(){
+			text.setText('distance in parsec: ' + Math.floor(distanceParsecNew));
+		}, this);
+
+        distanceParsecOld = distanceParsecNew;
     },
     collisionHandler: function(){//tutaj przechodzimy do menu zmieniajac zmienna menuWlaczone na true i wlaczajac odpowiednie animacje, oraz resetujac inne parametry
         this.camera.shake(0.025, 100);

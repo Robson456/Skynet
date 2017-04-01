@@ -12,7 +12,7 @@ var universeSpeed = 5;
 var enemySpeed = 10;
 var score  = 0;
 var cash = 0;
-var text;
+var parsecDistanceLabel;
 var tapToStart;
 var coin;
 var g = 35;

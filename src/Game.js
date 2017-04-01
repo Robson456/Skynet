@@ -36,14 +36,14 @@ gra.Game.prototype = {
         tapToStart = this.add.sprite(this.world.width/2, this.world.height/2, 'tapToStart');
         tapToStart.anchor.setTo(0.5);
     //wyswietlnie punktow- txt label
-        text = this.add.text(440, 80);
-        text.text = "distance in parsec: 0";
-        text.anchor.setTo(0.5);
-        text.font = 'Arial';
-        text.fontSize = 30;
-        text.fill = '#FFFFFF';
+        parsecDistanceLabel = this.add.text(440, 80);
+        parsecDistanceLabel.text = "distance in parsec: 0";
+        parsecDistanceLabel.anchor.setTo(0.5);
+        parsecDistanceLabel.font = 'Arial';
+        parsecDistanceLabel.fontSize = 30;
+        parsecDistanceLabel.fill = '#FFFFFF';
     //wyswietlanie ilosci monet
-        coinAmountLabel = this.add.text(100, 80);
+        coinAmountLabel = this.add.text(120, 80);
         coinAmountLabel.text = cash;
         coinAmountLabel.anchor.setTo(0.5);
         coinAmountLabel.font = 'Arial';
@@ -74,7 +74,12 @@ gra.Game.prototype = {
 //wylaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = false;// wylaczamu widocznosc napisu z menu "Tap to start the game"
             sound.visible = false;
+
+            parsecDistanceLabel.visible = true;
+            coinAmountLabel.visible = true;
+            smallCoin.visible = true;
             
+
 //tutaj piszemy to co dzieje sie w grze
 
             //glowne funkcje gry
@@ -90,6 +95,11 @@ gra.Game.prototype = {
 //wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = true;//wlaczamy napis "Tap to start the game"" w menu
             sound.visible = true;
+
+            parsecDistanceLabel.visible = false;
+            coinAmountLabel.visible = false;
+            smallCoin.visible = false;
+            
         }
         
     },
@@ -170,13 +180,12 @@ gra.Game.prototype = {
         }
     },
     wyswietlaniePrzebytejOdleglosci: function(){
-
         distanceParsecNew += 1;
-
         var pointsTween = this.add.tween(this);
 		pointsTween.to({ distanceParsecOld: distanceParsecNew }, 1000, Phaser.Easing.Linear.None, true, 500);
-		pointsTween.onUpdateCallback(function(){
-			text.setText('distance in parsec: ' + Math.floor(distanceParsecNew));
+		
+        pointsTween.onUpdateCallback(function(){
+			parsecDistanceLabel.setText('distance in parsec: ' + Math.floor(distanceParsecNew));
 		}, this);
 
         distanceParsecOld = distanceParsecNew;

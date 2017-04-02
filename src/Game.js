@@ -63,6 +63,11 @@ gra.Game.prototype = {
         emitter.makeParticles('goldParticle');
         emitter.gravity = 2000;
 
+        //particles emitter crash into asteroid
+        kaboom = this.add.emitter(0, 0, 100);
+        kaboom.makeParticles('explosion');
+        kaboom.gravity = 200;
+
     },
     
     update: function() {   
@@ -95,7 +100,7 @@ gra.Game.prototype = {
             this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
             this.destroyCoins();
             this.iloscMonet(cash);
-        
+               
          } else {//kiedy menu jest wlaczone i gra wlasciwa nie jest wlaczona
 //wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = true;//wlaczamy napis "Tap to start the game"" w menu
@@ -198,11 +203,14 @@ gra.Game.prototype = {
         coinAmountLabel.text =  ilosc;
     },
     collisionHandler: function(){//tutaj przechodzimy do menu zmieniajac zmienna menuWlaczone na true i wlaczajac odpowiednie animacje, oraz resetujac inne parametry
+        kaboom.x = enemy.x;
+        kaboom.y = enemy.y;
         this.camera.shake(0.025, 100);
+        kaboom.start(true, 400, null, 10);
         //nisczymy obiekt wroga i wlaczamy menu
         this.destroyEnemy(enemy);
         menuWlaczone = true;
-        this.gameOverScreen();
+        //this.gameOverScreen();
     },
     listener: function(){//ta funkcja "slucha" czy nie zostal klkniety guzik od wyciszania i wlaczania dzwiekow
       if(soundBuffor === 1){//muzyka wlaczona

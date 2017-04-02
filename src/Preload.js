@@ -11,6 +11,7 @@ gra.Preload.prototype = {
         this.load.image('soundOff','img/soundOff.png');
         this.load.image('tapToStart','img/tapToStartTheGame.png');
         this.load.image('smallCoin','img/star.png');
+        this.load.image('whiteSplash','img/whiteSplash.png');
         //animacje
         this.load.spritesheet('coin','img/coinAnimation.png', 400 , 400 , 4);
         this.load.spritesheet('player','img/shipAnimation.png', 102 , 284 , 3);

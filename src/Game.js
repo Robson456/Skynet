@@ -11,16 +11,16 @@ gra.Game.prototype = {
         
         bg2 = this.add.sprite(this.world.width/2, (bg.y - bg.height), 'bg');
         bg2.anchor.setTo(0.5, 0);
-
+   
     //guziki od dzwieku
         sound = this.add.sprite(100, this.world.height - 70, 'soundOff');
         sound.anchor.setTo(0.5);
         sound.scale.setTo(0.35);
         sound.inputEnabled = true;  
     //ikona coina obok licznika
-        smallCoin = this.add.sprite(60,76, 'smallCoin')
-        smallCoin.anchor.setTo(0.5);
-        smallCoin.scale.setTo(0.08)
+        smallCoinIcon = this.add.sprite(60,76, 'smallCoin')
+        smallCoinIcon.anchor.setTo(0.5);
+        smallCoinIcon.scale.setTo(0.08)
 
     //poczatkowe ustawienia dla gracza
         player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod
@@ -62,6 +62,7 @@ gra.Game.prototype = {
     update: function() {   
         
         this.physics.arcade.collide(enemy, player, this.collisionHandler, null, this);    
+        this.physics.arcade.collide(player, coins, this.coinCollisionHandler);
         this.poruszanieTla(bg); 
    
         //sprawdzamy, czy podczas gdy menu jest wlaczone, zostalo wykonanie tapniecie, jesli tak, to wychodzimy z menu
@@ -74,10 +75,9 @@ gra.Game.prototype = {
 //wylaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = false;// wylaczamu widocznosc napisu z menu "Tap to start the game"
             sound.visible = false;
-
             parsecDistanceLabel.visible = true;
             coinAmountLabel.visible = true;
-            smallCoin.visible = true;
+            smallCoinIcon.visible = true;
             
 
 //tutaj piszemy to co dzieje sie w grze
@@ -87,7 +87,6 @@ gra.Game.prototype = {
             this.wyswietlaniePrzebytejOdleglosci();
             this.createEnemy();//wykonuje sie tylko gdy obiekt nie istnieje
             this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
-            this.physics.arcade.collide(player, coins, this.coinCollisionHandler);
             this.destroyCoins();
             this.iloscMonet(cash);
         
@@ -95,10 +94,9 @@ gra.Game.prototype = {
 //wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = true;//wlaczamy napis "Tap to start the game"" w menu
             sound.visible = true;
-
             parsecDistanceLabel.visible = false;
             coinAmountLabel.visible = false;
-            smallCoin.visible = false;
+            smallCoinIcon.visible = false;
             
         }
         
@@ -198,7 +196,7 @@ gra.Game.prototype = {
         //nisczymy obiekt wroga i wlaczamy menu
         this.destroyEnemy(enemy);
         menuWlaczone = true;
-
+        this.gameOverScreen();
     },
     listener: function(){//ta funkcja "slucha" czy nie zostal klkniety guzik od wyciszania i wlaczania dzwiekow
       if(soundBuffor === 1){//muzyka wlaczona
@@ -234,21 +232,23 @@ gra.Game.prototype = {
          }
     },
     spawnCoin: function(){
-        var random = this.rnd.integerInRange(0, 1);
-        if(random === 0)
-            coin = this.add.sprite(160, -100 ,'coin', 0);
-        else
-            coin = this.add.sprite(480, -100 ,'coin', 0);
-        
-        this.physics.arcade.enable(coin);
-        coin.enableBody = true;
-        coin.scale.setTo(0.1);
-        coin.anchor.setTo(0.5);
-        rotating = coin.animations.add('rotating');
-        coin.animations.play('rotating',10, true);
-        coin.body.gravity.y = universeSpeed;
+        if(menuWlaczone === false){
+            var random = this.rnd.integerInRange(0, 1);
+            if(random === 0)
+                coin = this.add.sprite(160, -100 ,'coin', 0);
+            else
+                coin = this.add.sprite(480, -100 ,'coin', 0);
+            
+            this.physics.arcade.enable(coin);
+            coin.enableBody = true;
+            coin.scale.setTo(0.1);
+            coin.anchor.setTo(0.5);
+            rotating = coin.animations.add('rotating');
+            coin.animations.play('rotating',10, true);
+            coin.body.gravity.y = universeSpeed;
 
-        coins.add(coin);
+            coins.add(coin);
+        }
    },
     destroyCoins: function(){//niszczy obiekty coinow, ktore docieraja do konca tla
         coins.forEach(function(object) {
@@ -261,5 +261,13 @@ gra.Game.prototype = {
         coins.destroy();
         cash += 1;
 //tutaj animacje znikania coinow i dzwieki ich podnoszenia
+    },
+    gameOverScreen: function(){
+        //white splash
+        whiteSplash = this.add.sprite(this.world.width/2, this.world.height/2, 'whiteSplash');
+        whiteSplash.anchor.setTo(0.5);
+            //whiteSplash.alpha = 0;
+        //animacje whiteSplasha
+        this.add.tween(whiteSplash).to({alpha:0}, 2000, Phaser.Easing.Linear.None, true, 0);
     }
 }

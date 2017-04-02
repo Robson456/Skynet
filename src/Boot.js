@@ -8,6 +8,7 @@ var bg;
 var bg2;
 var player;
 var enemy;
+var whiteSplash;
 var universeSpeed = 5;
 var enemySpeed = 10;
 var score  = 0;

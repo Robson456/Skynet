@@ -17,6 +17,7 @@ var parsecDistanceLabel;
 var tapToStart;
 var coin;
 var g = 35;
+var emitter;
 var distanceParsecOld = 0;
 var distanceParsecNew = 0;
 //input memory, onDown and onUp

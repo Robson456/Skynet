@@ -56,7 +56,13 @@ gra.Game.prototype = {
         sound.events.onInputDown.add(this.listener, this);
     
         coins = this.add.group();
-	    this.time.events.loop(500, this.spawnCoin, this);
+	    this.time.events.loop(1000, this.spawnCoin, this);
+
+        //particles emitter coins
+        emitter = this.add.emitter(0, 0, 100);
+        emitter.makeParticles('goldParticle');
+        emitter.gravity = 2000;
+
     },
     
     update: function() {   
@@ -258,7 +264,13 @@ gra.Game.prototype = {
         }, this);
     },
     coinCollisionHandler: function(player, coins){//wykrywa kolizje gracza z coinami
+        //emisja czasteczek przy kolektowaniu monet
+        emitter.x = coins.x; 
+        emitter.y = coins.y; 
+        
         coins.destroy();
+        emitter.start(true, 1000, null, 20);
+
         cash += 1;
 //tutaj animacje znikania coinow i dzwieki ich podnoszenia
     },

@@ -269,5 +269,15 @@ gra.Game.prototype = {
             //whiteSplash.alpha = 0;
         //animacje whiteSplasha
         this.add.tween(whiteSplash).to({alpha:0}, 2000, Phaser.Easing.Linear.None, true, 0);
+
+
+        this.resetZmiennychPoPrzegranej();//resetujemy zmienne tutaj, bo beda one jeszcze potrzebne w ekranie po przegranej
+        //mozna ladowac nowy state? tylko co z muzyka, ktora sie przeladuje
+    },
+    resetZmiennychPoPrzegranej: function(){
+        distanceParsecOld = 0;
+        distanceParsecNew = 0;
+
+        g = 35;
     }
 }

@@ -29,7 +29,7 @@ gra.Game.prototype = {
         player.body.gravity.y = - this.physics.arcade.gravity.y;//antygrawitacja- zeby nie przyspieszal, jak asteroidy
         player.body.immovable = true;//immovable, zeby asteroidy nie spychaly statku
         player.scale.setTo(0.6);
-        player.anchor.setTo(0.5);
+        player.anchor.setTo(0.5, 0);
         flying = player.animations.add('flying');
         player.animations.play('flying', 21 , true);
     //napis w menu- tap to start the game
@@ -64,9 +64,13 @@ gra.Game.prototype = {
         emitter.gravity = 2000;
 
         //particles emitter crash into asteroid
-        kaboom = this.add.emitter(0, 0, 100);
-        kaboom.makeParticles('explosion');
-        kaboom.gravity = 200;
+        whiteEmitter = this.add.emitter(0, 0, 100);
+        whiteEmitter.makeParticles('whiteParticle');
+        whiteEmitter.gravity = 2000;
+
+        redEmitter = this.add.emitter(0, 0, 100);
+        redEmitter.makeParticles('redParticle');
+        redEmitter.gravity = 2000;
 
     },
     
@@ -203,14 +207,23 @@ gra.Game.prototype = {
         coinAmountLabel.text =  ilosc;
     },
     collisionHandler: function(){//tutaj przechodzimy do menu zmieniajac zmienna menuWlaczone na true i wlaczajac odpowiednie animacje, oraz resetujac inne parametry
-        kaboom.x = enemy.x;
-        kaboom.y = enemy.y;
+        whiteEmitter.x = player.x;
+        whiteEmitter.y = player.y;
+
+        redEmitter.x = player.x;
+        redEmitter.y = player.y;
+
         this.camera.shake(0.025, 100);
-        kaboom.start(true, 400, null, 10);
+        whiteEmitter.start(true, 400, null, 30);
+        redEmitter.start(true, 400, null, 10);
+        
         //nisczymy obiekt wroga i wlaczamy menu
+        player.destroy();
+
         this.destroyEnemy(enemy);
         menuWlaczone = true;
-        //this.gameOverScreen();
+        
+        this.gameOverScreen();
     },
     listener: function(){//ta funkcja "slucha" czy nie zostal klkniety guzik od wyciszania i wlaczania dzwiekow
       if(soundBuffor === 1){//muzyka wlaczona
@@ -286,13 +299,17 @@ gra.Game.prototype = {
         //white splash
         whiteSplash = this.add.sprite(this.world.width/2, this.world.height/2, 'whiteSplash');
         whiteSplash.anchor.setTo(0.5);
-            //whiteSplash.alpha = 0;
+        
+        whiteSplash.alpha = 0;
+        
         //animacje whiteSplasha
-        this.add.tween(whiteSplash).to({alpha:0}, 2000, Phaser.Easing.Linear.None, true, 0);
-
+        this.add.tween(whiteSplash).to({alpha:1}, 3000, Phaser.Easing.Linear.None, true, 0);
 
         this.resetZmiennychPoPrzegranej();//resetujemy zmienne tutaj, bo beda one jeszcze potrzebne w ekranie po przegranej
         //mozna ladowac nowy state? tylko co z muzyka, ktora sie przeladuje
+
+//tutaj kod podliczania punktow i tworzenia obiektu player na nowo po przegranej
+
     },
     resetZmiennychPoPrzegranej: function(){
         distanceParsecOld = 0;

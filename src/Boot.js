@@ -17,7 +17,7 @@ var parsecDistanceLabel;
 var tapToStart;
 var coin;
 var g = 300;
-var emitter;
+// var emitter;
 var kaboom;
 var distanceParsecOld = 0;
 var distanceParsecNew = 0;

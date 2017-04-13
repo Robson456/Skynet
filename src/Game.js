@@ -22,16 +22,8 @@ gra.Game.prototype = {
         smallCoinIcon.anchor.setTo(0.5);
         smallCoinIcon.scale.setTo(0.08)
 
-    //poczatkowe ustawienia dla gracza
-        player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod
-        this.physics.arcade.enable(player);
-        player.enableBody = true;
-        player.body.gravity.y = - this.physics.arcade.gravity.y;//antygrawitacja- zeby nie przyspieszal, jak asteroidy
-        player.body.immovable = true;//immovable, zeby asteroidy nie spychaly statku
-        player.scale.setTo(0.6);
-        player.anchor.setTo(0.5, 0);
-        flying = player.animations.add('flying');
-        player.animations.play('flying', 21 , true);
+    // //poczatkowe ustawienia dla gracza
+        this.createNewPlayer();
     //napis w menu- tap to start the game
         tapToStart = this.add.sprite(this.world.width/2, this.world.height/2, 'tapToStart');
         tapToStart.anchor.setTo(0.5);
@@ -71,6 +63,10 @@ gra.Game.prototype = {
         redEmitter = this.add.emitter(0, 0, 100);
         redEmitter.makeParticles('redParticle');
         redEmitter.gravity = 1000;
+
+        blackEmitter = this.add.emitter(0,0, 100);
+        blackEmitter.makeParticles('blackParticle');
+        blackEmitter.gravity = 300;
 
     //tekst labele gameoverscreenu
         distanceLabelGameOverScreen = this.add.text(this.world.width/2, this.world.height/2);
@@ -249,7 +245,7 @@ gra.Game.prototype = {
     },
     createEnemy: function(){//tworzymy obiekt wroga, kiedy wyjdziemy z menu po uderzeniu w ekran
         if(checkIfEnemyCreated === false){
-            score = 0; //zerujemy wynik z ewentualnej poprzedniej rozgrywki, dlatego tutaj, bo ta funkcja wlacza sie raz, zaraz po rozpoczeciu rozgrywi od nowa
+            //score = 0; //zerujemy wynik z ewentualnej poprzedniej rozgrywki, dlatego tutaj, bo ta funkcja wlacza sie raz, zaraz po rozpoczeciu rozgrywi od nowa
             cash = 0 ;
 
             enemy = this.add.sprite(160, -100, 'enemy');
@@ -340,6 +336,7 @@ gra.Game.prototype = {
     },
     zapiszIWyswietlWynik: function(){
         //localStorage, zostawiamy zmienne rekordow w telefonie
+        //distance in parsec record
         if(localStorage.getItem('highscore') === null){
             localStorage.setItem('highscore', distanceParsecNew);    
         }
@@ -348,14 +345,29 @@ gra.Game.prototype = {
             //info czy nowy rekord
             console.log("nowy rekord!");
          }  
+         //coins coin amount
+        if(localStorage.getItem('money') === null){
+            localStorage.setItem('money', cash);    
+        }
+        else if(localStorage.getItem('money')!= null){//mozna zmienic na else?
+            var money = cash + localStorage.getItem('money'); 
+            localStorage.setItem('money', money);
+         }  
            
+
         //tworze text label, wktorym bedzie wyswietlany text po skonczeniu animacji
         distanceEndGameLabel = this.add.text(this.world.width/2, this.world.height/2);
-        distanceEndGameLabel.text = cash;
         distanceEndGameLabel.anchor.setTo(0.5);
         distanceEndGameLabel.font = 'Arial';
         distanceEndGameLabel.fontSize = 50;
         distanceEndGameLabel.fill = '#000000'
+
+        coinAmountGameOverScreenLabel = this.add.text((this.world.width/2), (this.world.height/2)+100);
+        coinAmountGameOverScreenLabel.anchor.setTo(0.5);
+        coinAmountGameOverScreenLabel.font = 'Arial';
+        coinAmountGameOverScreenLabel.fontSize = 50;
+        coinAmountGameOverScreenLabel.fill = '#000000'
+
         //pocztakowa ilosc punktow, od ktorej zaczyna sie tween wyswietlania przebytej odleglosci
         var x = 0;//od tej wartosci zaczynamy tweenowac wynik
         
@@ -367,8 +379,66 @@ gra.Game.prototype = {
         distanceTween.onUpdateCallback(function(){
             distanceEndGameLabel.setText('You flew: '+ Math.floor(this.x) +' parsecs');
         }, this);
-        console.log("Gratulacje! Twoj nowy distance highscore to: ", localStorage.getItem('highscore'),"!");
+        
 
+        distanceTween.onComplete.addOnce(function(){//po zakonczeniu tweenu z przebyta odlegloscia
+        //emitujemy strzal black square
+            blackEmitter.x = distanceEndGameLabel.x;
+            blackEmitter.y = distanceEndGameLabel.y;
+
+            this.camera.shake(0.025, 200);
+            blackEmitter.start(true, 400, null, 15);
+            
+
+//tutaj kwadratowy emitter po zakonczniu wyswietlania punktow, albo nizej?
+
+            var littleCoin = this.add.sprite((this.world.width/2)-100, (this.world.height/2)+100, 'littleCoin');
+            littleCoin.scale.setTo(0.2);
+            littleCoin.anchor.setTo(0.5);
+//tutaj dzwiek pojawiajacej sie monety
+            var coin_amount = 0;
+            //tworzymy tween
+            var coinAmountTween = this.add.tween(this);
+            coinAmountTween.to({coin_amount: cash }, 2000, Phaser.Easing.Linear.None, true, 500);
+       
+            //wyswietlanie zmian twena w trakcie jego trwania
+            coinAmountTween.onUpdateCallback(function(){
+                coinAmountGameOverScreenLabel.setText(Math.round(this.coin_amount));
+            }, this);
+
+//play again, or menu?
+            coinAmountTween.onComplete.addOnce(function(){
+                var retry = this.add.text((this.world.width/2), (this.world.height/2)+300);
+                retry.anchor.setTo(0.5);
+                retry.text = "Do you want to play again?"
+                retry.font = 'Arial';
+                retry.fontSize = 45;
+                retry.fill = '#000000';
+//wait till choice will be made
+                retry.destroy();
+                littleCoin.destroy();
+                coinAmountGameOverScreenLabel.destroy();
+                distanceEndGameLabel.destroy();//niszczymy napis z przebyta odlegloscia
+                this.add.tween(whiteSplash).to({alpha: 0}, 2000, Phaser.Easing.Linear.None, true, 0);
+//ponizzszye linie wywolac po okreslonym czasie, lub po kliknieciu
+                this.createNewPlayer();
+                this.resetZmiennychPoPrzegranej();
+                isGameOverScreenOn = false;//wychdzimy z ekranu gameOverScreen
+            }, this);
+        }, this);
+
+
+    },
+    createNewPlayer: function(){
+        player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod
+        this.physics.arcade.enable(player);
+        player.enableBody = true;
+        player.body.gravity.y = - this.physics.arcade.gravity.y;//antygrawitacja- zeby nie przyspieszal, jak asteroidy
+        player.body.immovable = true;//immovable, zeby asteroidy nie spychaly statku
+        player.scale.setTo(0.6);
+        player.anchor.setTo(0.5, 0);
+        flying = player.animations.add('flying');
+        player.animations.play('flying', 21 , true);
     }
     //koniec
 }

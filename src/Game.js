@@ -11,7 +11,7 @@ gra.Game.prototype = {
         
         bg2 = this.add.sprite(this.world.width/2, (bg.y - bg.height), 'bg');
         bg2.anchor.setTo(0.5, 0);
-   
+
     //guziki od dzwieku
         sound = this.add.sprite(100, this.world.height - 70, 'soundOff');
         sound.anchor.setTo(0.5);
@@ -66,12 +66,22 @@ gra.Game.prototype = {
         //particles emitter crash into asteroid
         whiteEmitter = this.add.emitter(0, 0, 100);
         whiteEmitter.makeParticles('whiteParticle');
-        whiteEmitter.gravity = 2000;
+        whiteEmitter.gravity = 1000;
 
         redEmitter = this.add.emitter(0, 0, 100);
         redEmitter.makeParticles('redParticle');
-        redEmitter.gravity = 2000;
+        redEmitter.gravity = 1000;
 
+    //tekst labele gameoverscreenu
+        distanceLabelGameOverScreen = this.add.text(this.world.width/2, this.world.height/2);
+        distanceLabelGameOverScreen.text = "GameOver";
+        distanceLabelGameOverScreen.anchor.setTo(0.5);
+        distanceLabelGameOverScreen.font = 'Arial';
+        distanceLabelGameOverScreen.fontSize = 40;
+        distanceLabelGameOverScreen.fill = '#000000'
+        
+        distanceLabelGameOverScreen.alpha = 0;
+            //tutaj jeszcze text label z coinami
     },
     
     update: function() {   
@@ -86,7 +96,7 @@ gra.Game.prototype = {
         }
 
         //sprawdzamy czy menu jest wlaczone, czy nie i wykonujemy odpowiednie operacje
-        if (menuWlaczone === false){//kiedy menu nie jest wlaczone, czyli gra wlasciwa juz dziala
+        if (menuWlaczone === false && isGameOverScreenOn === false){//kiedy menu nie jest wlaczone, czyli gra wlasciwa juz dziala
 //wylaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = false;// wylaczamu widocznosc napisu z menu "Tap to start the game"
             sound.visible = false;
@@ -296,6 +306,9 @@ gra.Game.prototype = {
 //tutaj animacje znikania coinow i dzwieki ich podnoszenia
     },
     gameOverScreen: function(){
+        isGameOverScreenOn = true;
+
+
         //white splash
         whiteSplash = this.add.sprite(this.world.width/2, this.world.height/2, 'whiteSplash');
         whiteSplash.anchor.setTo(0.5);
@@ -303,10 +316,18 @@ gra.Game.prototype = {
         whiteSplash.alpha = 0;
         
         //animacje whiteSplasha
-        this.add.tween(whiteSplash).to({alpha:1}, 3000, Phaser.Easing.Linear.None, true, 0);
+        var tween = this.add.tween(whiteSplash).to({alpha:1}, 2000, Phaser.Easing.Linear.None, true, 0);
+        
+        tween.onComplete.addOnce(function(){
+            this.zapiszIWyswietlWynik();
+        }, this);//po wykonaniu tween wywolujemy raz funkcje zapiszIwyswietlWynik()
 
-        this.resetZmiennychPoPrzegranej();//resetujemy zmienne tutaj, bo beda one jeszcze potrzebne w ekranie po przegranej
-        //mozna ladowac nowy state? tylko co z muzyka, ktora sie przeladuje
+
+//uruchamiac przed startem gry?
+//this.resetZmiennychPoPrzegranej();//resetujemy zmienne tutaj, bo beda one jeszcze potrzebne w ekranie po przegranej
+
+
+        //mozna ladowac nowy state? tylko co z muzyka, ktora sie przeladuje, chyba ze uzyje kodu od mazura
 
 //tutaj kod podliczania punktow i tworzenia obiektu player na nowo po przegranej
 
@@ -315,6 +336,39 @@ gra.Game.prototype = {
         distanceParsecOld = 0;
         distanceParsecNew = 0;
 
-        g = 35;
+        g = 300;
+    },
+    zapiszIWyswietlWynik: function(){
+        //localStorage, zostawiamy zmienne rekordow w telefonie
+        if(localStorage.getItem('highscore') === null){
+            localStorage.setItem('highscore', distanceParsecNew);    
+        }
+        else if(distanceParsecNew > localStorage.getItem('highscore')){
+            localStorage.setItem('highscore', distanceParsecNew);
+            //info czy nowy rekord
+            console.log("nowy rekord!");
+         }  
+           
+        //tworze text label, wktorym bedzie wyswietlany text po skonczeniu animacji
+        distanceEndGameLabel = this.add.text(this.world.width/2, this.world.height/2);
+        distanceEndGameLabel.text = cash;
+        distanceEndGameLabel.anchor.setTo(0.5);
+        distanceEndGameLabel.font = 'Arial';
+        distanceEndGameLabel.fontSize = 50;
+        distanceEndGameLabel.fill = '#000000'
+        //pocztakowa ilosc punktow, od ktorej zaczyna sie tween wyswietlania przebytej odleglosci
+        var x = 0;//od tej wartosci zaczynamy tweenowac wynik
+        
+        //tworzymy tweena
+        var distanceTween = this.add.tween(this);
+        distanceTween.to({ x: distanceParsecNew }, 2000, Phaser.Easing.Linear.None, true, 500);
+
+        //wyswietlanie zmian twena w trakcie jego trwania
+        distanceTween.onUpdateCallback(function(){
+            distanceEndGameLabel.setText('You flew: '+ Math.floor(this.x) +' parsecs');
+        }, this);
+        console.log("Gratulacje! Twoj nowy distance highscore to: ", localStorage.getItem('highscore'),"!");
+
     }
+    //koniec
 }

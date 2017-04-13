@@ -16,7 +16,7 @@ var cash = 0;
 var parsecDistanceLabel;
 var tapToStart;
 var coin;
-var g = 35;
+var g = 300;
 var emitter;
 var kaboom;
 var distanceParsecOld = 0;
@@ -33,10 +33,12 @@ var music;
 //splashScene 
 var splashImage1;
 var tween;
-//menu staff, czy wlaczone itp.
+//menu staff,isGameOverScreenOn, czy wlaczone itp.
 var menuWlaczone = true;
 var checkIfEnemyCreated = false;//sprawdzamy czy wrog jest stworzony, funkcja wykonuje sie w update, w menu obiekt jest zabijany
 var checkIfScreenWasTouchedInMenu = false;//zmiana na true powoduje wlaczenie gry wlasciwej
+var isGameOverScreenOn = false;
+var distanceLabelGameOverScreen;//text label wyswietlajacy pkt na gameOverScreen
 //do rakiet
 var zwrotnosc = 300;//parametr szybkosci przesuniecia statku
 gra.Boot = function(game) {};

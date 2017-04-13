@@ -5,7 +5,7 @@ gra.Preload.prototype = {
         //sprite statyczne(nie animowane)
         this.load.image('enemy', 'img/stone.png');
         this.load.image('bg', 'img/bg.png');  
-        this.load.image('bg2', 'img/bg2.png');
+        this.load.image('bg2', 'img/bg.png');
         this.load.image('splash1', 'img/splashImage1.png');
         this.load.image('soundOn','img/soundOn.png');
         this.load.image('soundOff','img/soundOff.png');

@@ -331,7 +331,7 @@ gra.Game.prototype = {
     resetZmiennychPoPrzegranej: function(){
         distanceParsecOld = 0;
         distanceParsecNew = 0;
-
+        cash =0;
         g = 300;
     },
     zapiszIWyswietlWynik: function(){
@@ -407,6 +407,7 @@ gra.Game.prototype = {
             }, this);
 
 //play again, or menu?
+//wyrzucic? 
             coinAmountTween.onComplete.addOnce(function(){
                 var retry = this.add.text((this.world.width/2), (this.world.height/2)+300);
                 retry.anchor.setTo(0.5);

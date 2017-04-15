@@ -17,6 +17,7 @@ gra.Preload.prototype = {
         this.load.image('redParticle','img/redParticle.png');
         this.load.image('blackParticle','img/blackParticle.png');
         this.load.image('littleCoin', 'img/star.png');
+        this.load.image('magnes','img/magnes.png');
         //animacje
         this.load.spritesheet('coin','img/coinAnimation.png', 400 , 400 , 4);
         this.load.spritesheet('player','img/shipAnimation.png', 102 , 284 , 3);

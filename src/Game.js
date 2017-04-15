@@ -49,6 +49,8 @@ gra.Game.prototype = {
     
         coins = this.add.group();
 	    this.time.events.loop(300, this.spawnCoin, this);
+        
+
 
         //particles emitter coins
         emitter = this.add.emitter(0, 0, 100);
@@ -78,6 +80,13 @@ gra.Game.prototype = {
         
         distanceLabelGameOverScreen.alpha = 0;
             //tutaj jeszcze text label z coinami
+
+//dodaje tajmer co ile ma sie wykonac funkcja spawnMagnes
+        timer = this.time.create(false);
+        timer.loop(6000, this.spawnMagnes, this);
+        timer.start();
+
+        
     },
     
     update: function() {   
@@ -99,6 +108,8 @@ gra.Game.prototype = {
             parsecDistanceLabel.visible = true;
             coinAmountLabel.visible = true;
             smallCoinIcon.visible = true;
+
+
             
 
 //tutaj piszemy to co dzieje sie w grze
@@ -110,6 +121,9 @@ gra.Game.prototype = {
             this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
             this.destroyCoins();
             this.iloscMonet(cash);
+
+
+            
                
          } else {//kiedy menu jest wlaczone i gra wlasciwa nie jest wlaczona
 //wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
@@ -271,6 +285,8 @@ gra.Game.prototype = {
                 coin = this.add.sprite(160, -100 ,'coin', 0);
             else
                 coin = this.add.sprite(480, -100 ,'coin', 0);
+                
+            
             
             this.physics.arcade.enable(coin);
             coin.enableBody = true;
@@ -283,6 +299,24 @@ gra.Game.prototype = {
             coins.add(coin);
         }
    },
+        spawnMagnes: function(){
+        magnes = this.add.sprite(480, -100 ,'magnes');
+        if(menuWlaczone === false){
+            var random = this.rnd.integerInRange(0, 1);
+            if(random === 0)
+                magnes = this.add.sprite(160, -100 ,'magnes', 0);
+            else
+                magnes = this.add.sprite(480, -100 ,'magnes', 0);
+
+        }    
+         
+
+            this.physics.arcade.enable(magnes);
+            magnes.enableBody = true;
+            magnes.scale.setTo(0.1);
+            magnes.anchor.setTo(0.5);
+            magnes.body.gravity.y = universeSpeed;
+    },
     destroyCoins: function(){//niszczy obiekty coinow, ktore docieraja do konca tla
         coins.forEach(function(object) {
             if(object.y >= this.world.height) {

@@ -48,7 +48,7 @@ gra.Game.prototype = {
         sound.events.onInputDown.add(this.listener, this);
     
         coins = this.add.group();
-	    this.time.events.loop(1000, this.spawnCoin, this);
+	    this.time.events.loop(300, this.spawnCoin, this);
 
         //particles emitter coins
         emitter = this.add.emitter(0, 0, 100);

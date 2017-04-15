@@ -24,7 +24,7 @@ gra.Preload.prototype = {
         this.load.audio('musicUniverse', 'assets/sound.mp3');
 },
     create: function() {
-        this.state.start('Game');
+        this.state.start('SplashScene');
     }
 
 };

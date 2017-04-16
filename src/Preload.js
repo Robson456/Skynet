@@ -23,6 +23,8 @@ gra.Preload.prototype = {
         this.load.spritesheet('player','img/shipAnimation.png', 102 , 284 , 3);
         //dzwieki
         this.load.audio('musicUniverse', 'assets/sound.mp3');
+        this.load.audio('coinPicking', 'assets/coinPicking.mp3');
+
 },
     create: function() {
         this.state.start('SplashScene');

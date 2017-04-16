@@ -30,6 +30,7 @@ var wasScreenTapped2 = false;//bufor dla tapniecia
 var sound;//soundOn, soundOff sprite
 var soundBuffor = 0; //1 gdy dzwiek wlaczony,0 gdy dzwiek wylaczony
 var music;
+var coinPicking;
 //splashScene 
 var splashImage1;
 var tween;

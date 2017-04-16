@@ -41,17 +41,19 @@ gra.Game.prototype = {
         coinAmountLabel.font = 'Arial';
         coinAmountLabel.fontSize = 30;
         coinAmountLabel.fill = '#FFFFFF'
-    //music
+    //music&sounds
         music = this.add.audio('musicUniverse');
         music.stop();
+        
+        coinPicking = this.add.audio('coinPicking');
+        coinPicking.stop();
+
         //wlaczenie i wylaczenie dzwieku
         sound.events.onInputDown.add(this.listener, this);
     
         coins = this.add.group();
 	    this.time.events.loop(300, this.spawnCoin, this);
         
-
-
         //particles emitter coins
         emitter = this.add.emitter(0, 0, 100);
         emitter.makeParticles('goldParticle');
@@ -325,6 +327,9 @@ gra.Game.prototype = {
         }, this);
     },
     coinCollisionHandler: function(player, coins){//wykrywa kolizje gracza z coinami
+        //dzwiek podnoszenia coina
+        coinPicking.play('', 0, 1, false);
+        
         //emisja czasteczek przy kolektowaniu monet
         emitter.x = coins.x; 
         emitter.y = coins.y; 

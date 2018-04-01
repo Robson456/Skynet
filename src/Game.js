@@ -84,9 +84,9 @@ gra.Game.prototype = {
             //tutaj jeszcze text label z coinami
 
 //dodaje tajmer co ile ma sie wykonac funkcja spawnMagnes
-        timer = this.time.create(false);
-        timer.loop(6000, this.spawnMagnes, this);
-        timer.start();
+        // timer = this.time.create(false);
+        // timer.loop(6000, this.spawnMagnes, this);
+        // timer.start();
 
         
     },
@@ -123,8 +123,7 @@ gra.Game.prototype = {
             this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
             this.destroyCoins();
             this.iloscMonet(cash);
-
-
+            this.changeCoins();
             
                
          } else {//kiedy menu jest wlaczone i gra wlasciwa nie jest wlaczona
@@ -299,10 +298,12 @@ gra.Game.prototype = {
             coin.body.gravity.y = universeSpeed;
 
             coins.add(coin);
+            
         }
+    
    },
         spawnMagnes: function(){
-        magnes = this.add.sprite(480, -100 ,'magnes');
+        //magnes = this.add.sprite(480, -100 ,'magnes');
         if(menuWlaczone === false){
             var random = this.rnd.integerInRange(0, 1);
             if(random === 0)
@@ -310,14 +311,32 @@ gra.Game.prototype = {
             else
                 magnes = this.add.sprite(480, -100 ,'magnes', 0);
 
-        }    
+        
          
 
             this.physics.arcade.enable(magnes);
             magnes.enableBody = true;
-            magnes.scale.setTo(0.1);
+            magnes.scale.setTo(0.07);
             magnes.anchor.setTo(0.5);
             magnes.body.gravity.y = universeSpeed;
+
+            coins.add(magnes);
+        }
+        
+
+    },
+    changeCoins: function(){ //zamiana coina w magnes 
+     
+        if(distanceParsecNew == 800 || distanceParsecNew == 2400 || distanceParsecNew == 4400){
+            coin.kill();
+            this.spawnMagnes();
+            
+        }    
+    
+    },
+    Magnes: function(){
+       //trwac przez np 3s, "zbiera" wszystkie coiny, ktore znajduja sie na ekranie, liczy ich sume i dodaje do sumy
+       
     },
     destroyCoins: function(){//niszczy obiekty coinow, ktore docieraja do konca tla
         coins.forEach(function(object) {

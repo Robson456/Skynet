@@ -2,8 +2,10 @@ var gra = {
     _WIDTH: 640,
     _HEIGHT: 1136
 };
-
-//tutaj zmienne
+//bonus items chances of spowning (max and min)
+var magnesMinChance = 1
+var magnesMaxChance = 5
+//sprites variables
 var bg;
 var bg2;
 var player;
@@ -34,13 +36,13 @@ var coinPicking;
 //splashScene 
 var splashImage1;
 var tween;
-//menu staff,isGameOverScreenOn, czy wlaczone itp.
-var menuWlaczone = true;
+//menu stuff,isGameOverScreenOn, czy wlaczone itp.
+var menuTurnedOn = true;
 var checkIfEnemyCreated = false;//sprawdzamy czy wrog jest stworzony, funkcja wykonuje sie w update, w menu obiekt jest zabijany
 var checkIfScreenWasTouchedInMenu = false;//zmiana na true powoduje wlaczenie gry wlasciwej
 var isGameOverScreenOn = false;
 var distanceLabelGameOverScreen;//text label wyswietlajacy pkt na gameOverScreen
-//do rakiet
+//rocket stuff
 var zwrotnosc = 300;//parametr szybkosci przesuniecia statku
 gra.Boot = function(game) {};
 gra.Boot.prototype = {

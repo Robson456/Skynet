@@ -119,7 +119,8 @@ gra.Game.prototype = {
         //    //->    // or the small text with label "tap to start the 
         //    //->    //game" was clicked 
 
-        if(menuTurnedOn === true && this.game.input.pointer1.isDown === true  ||  this.input.activePointer.leftButton.isDown === true){
+        if(menuTurnedOn === true && this.game.input.pointer1.isDown === true && this.game.input.pointer1.y > this.world.height/2 && this.game.input.pointer1.y < (this.world.height/4)*3 
+              ||  this.input.activePointer.leftButton.isDown === true){
             menuTurnedOn = false;//main game started
         }
 
@@ -337,23 +338,26 @@ gra.Game.prototype = {
         }
    },
     spawnMagnes: function(){      
-        let magnes;
+        // let magnes;
         if(menuTurnedOn === false){
             let random = this.rnd.integerInRange(0, 1);
             if(random === 0)
                 magnes = this.add.sprite(160, -100 ,'magnes', 0);
             else
                 magnes = this.add.sprite(480, -100 ,'magnes', 0);
-
+            
+            //doesnt matter which magnes was created(left or right), we need to add some settings to it
+            if(magnes){
+                this.physics.arcade.enable(magnes);
+                magnes.enableBody = true;
+                magnes.scale.setTo(0.1);
+                magnes.anchor.setTo(0.5, 1);
+                magnes.body.gravity.y = universeSpeed;
+        
+                magneses.add(magnes);
+            }
         }    
 
-        this.physics.arcade.enable(magnes);
-        magnes.enableBody = true;
-        magnes.scale.setTo(0.1);
-        magnes.anchor.setTo(0.5, 1);
-        magnes.body.gravity.y = universeSpeed;
-
-        magneses.add(magnes);
     },
     startSpawning: function() {
         let random = this.rnd.integerInRange(1, 100)

@@ -1,7 +1,16 @@
-- muzyka(zmodyfikowac dzwiek)
-- animacje(spaceship in progress, dodac rozciaganie?)
-- usunac elementy menu po przegra
-- poprawic dzialanie przejscia z game over screen do nowej gry
-- w menu wyswietlac ilosc monet z localstorage
--dodac magnes
-- dodac quen
+- add magnes item sound 
+- add duration time of magnes
+- animation(spaceship resize horizontally, but just a bit)
+- when white splash is on the screen after game over screen, turn off possibility of clicking and still playinh, even though u dont see anything on the screen
+- add button with text label "ok" or "go to menu" on white splash screen after game over
+- show amount coins we have in menu screen
+
+- add protect item bonus
+- add u-235 engine bonus (speed) item(in short duration time increase your length of fly, but its harder because of faster asteroids)
+
+- add bars on the top of main game screen with a line which shows a user duration time of bonus items which are on
+
+- add some task to do, which u get an extra money for completing them, e.g. u have to flew 100 parsec(as one of the first ones)
+- should repair clicking to start, atm all screen is reacting on click, should react only bottom part, or even "tap to start the game" element
+- add shop(later)
+- change sound button on/off to not start the game if clicked in menu

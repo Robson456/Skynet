@@ -1,40 +1,41 @@
 gra.Game = function(game) {};
 gra.Game.prototype = {
-    //console.log("To jest funkcja create wywolywana tylko raz po wczytaniu strony");
+    //console.log("create function is invoke only once, after first loading the game");
     create: function() {
-    //wlaczamy fizyke arkadowa
+    //turn on arcade physics engine(ofc from a phaser lib)
         this.physics.startSystem(Phaser.Physics.ARCADE);
         this.physics.arcade.gravity.y = g;
-    //poczatkowe ustawienia dla tla
+    //default bg settings 
         bg = this.add.sprite(this.world.width/2, this.world.height/2, 'bg');
         bg.anchor.setTo(0.5, 0); 
         
         bg2 = this.add.sprite(this.world.width/2, (bg.y - bg.height), 'bg');
         bg2.anchor.setTo(0.5, 0);
 
-    //guziki od dzwieku
-        sound = this.add.sprite(100, this.world.height - 70, 'soundOff');
+    //sound button
+        // sound = this.add.sprite(100, this.world.height - 70, 'soundOff');
+        sound = this.add.sprite(this.world.width - 70, 70, 'soundOff');
         sound.anchor.setTo(0.5);
         sound.scale.setTo(0.35);
         sound.inputEnabled = true;  
-    //ikona coina obok licznika
+    //coin icon(which is next to coin counter)
         smallCoinIcon = this.add.sprite(60,76, 'smallCoin')
         smallCoinIcon.anchor.setTo(0.5);
         smallCoinIcon.scale.setTo(0.08)
 
-    // //poczatkowe ustawienia dla gracza
+    //load player with default settings 
         this.createNewPlayer();
-    //napis w menu- tap to start the game
-        tapToStart = this.add.sprite(this.world.width/2, this.world.height/2, 'tapToStart');
+    //game text- "tap to start the game"
+        tapToStart = this.add.sprite(this.world.width/2, (this.world.height/10)*7, 'tapToStart');
         tapToStart.anchor.setTo(0.5);
-    //wyswietlnie punktow- txt label
+    //score txt label
         parsecDistanceLabel = this.add.text(440, 80);
         parsecDistanceLabel.text = "distance in parsec: 0";
         parsecDistanceLabel.anchor.setTo(0.5);
         parsecDistanceLabel.font = 'Arial';
         parsecDistanceLabel.fontSize = 30;
         parsecDistanceLabel.fill = '#FFFFFF';
-    //wyswietlanie ilosci monet
+    //coins amount text settings
         coinAmountLabel = this.add.text(120, 80);
         coinAmountLabel.text = cash;
         coinAmountLabel.anchor.setTo(0.5);
@@ -48,18 +49,25 @@ gra.Game.prototype = {
         coinPicking = this.add.audio('coinPicking');
         coinPicking.stop();
 
-        //wlaczenie i wylaczenie dzwieku
+        //turning on/off the sound 
         sound.events.onInputDown.add(this.listener, this);
     
-        coins = this.add.group();
-	    this.time.events.loop(300, this.spawnCoin, this);
+
+
+        //magneses group
+        magneses = this.add.group()
         
-        //particles emitter coins
+        //coins spawning
+        coins = this.add.group();
+	    // this.time.events.loop(300, this.spawnCoin, this);
+	    this.time.events.loop(300, this.startSpawning, this);
+        
+        //particle coins emitter 
         emitter = this.add.emitter(0, 0, 100);
         emitter.makeParticles('goldParticle');
         emitter.gravity = 2000;
 
-        //particles emitter crash into asteroid
+        //particle emitter (asteriod collision)
         whiteEmitter = this.add.emitter(0, 0, 100);
         whiteEmitter.makeParticles('whiteParticle');
         whiteEmitter.gravity = 1000;
@@ -72,7 +80,11 @@ gra.Game.prototype = {
         blackEmitter.makeParticles('blackParticle');
         blackEmitter.gravity = 300;
 
-    //tekst labele gameoverscreenu
+        blueEmitter = this.add.emitter(0, 0, 100)
+        blueEmitter.makeParticles('blueParticle')
+        // blueEmitter.gravity = 1000
+
+    //text labels of game over screen
         distanceLabelGameOverScreen = this.add.text(this.world.width/2, this.world.height/2);
         distanceLabelGameOverScreen.text = "GameOver";
         distanceLabelGameOverScreen.anchor.setTo(0.5);
@@ -84,9 +96,9 @@ gra.Game.prototype = {
             //tutaj jeszcze text label z coinami
 
 //dodaje tajmer co ile ma sie wykonac funkcja spawnMagnes
-        timer = this.time.create(false);
-        timer.loop(6000, this.spawnMagnes, this);
-        timer.start();
+        // timer = this.time.create(false);
+        // timer.loop(6000, this.spawnMagnes, this);
+        // timer.start();
 
         
     },
@@ -95,15 +107,24 @@ gra.Game.prototype = {
         
         this.physics.arcade.collide(enemy, player, this.collisionHandler, null, this);    
         this.physics.arcade.collide(player, coins, this.coinCollisionHandler);
+        this.physics.arcade.collide(player, magneses, this.magnesCollisionHandler);        
         this.poruszanieTla(bg); 
    
-        //sprawdzamy, czy podczas gdy menu jest wlaczone, zostalo wykonanie tapniecie, jesli tak, to wychodzimy z menu
-        if(menuWlaczone === true && this.game.input.pointer1.isDown === true  ||  this.input.activePointer.leftButton.isDown === true){
-            menuWlaczone = false;//i zaczynamy grac w gre wlasciwa
+        //sprawdzamy, czy podczas gdy menu jest wlaczone,
+        //zostalo wykonanie tapniecie, jesli tak, to wychodzimy
+        //z menu
+        //we check if while the menu is on, and tap event was emitted by user, then we're quiting menu and the game is starting 
+
+        //    //->    //should I change to starting the game just if tap,
+        //    //->    // or the small text with label "tap to start the 
+        //    //->    //game" was clicked 
+
+        if(menuTurnedOn === true && this.game.input.pointer1.isDown === true  ||  this.input.activePointer.leftButton.isDown === true){
+            menuTurnedOn = false;//main game started
         }
 
         //sprawdzamy czy menu jest wlaczone, czy nie i wykonujemy odpowiednie operacje
-        if (menuWlaczone === false && isGameOverScreenOn === false){//kiedy menu nie jest wlaczone, czyli gra wlasciwa juz dziala
+        if (menuTurnedOn === false && isGameOverScreenOn === false){//kiedy menu nie jest wlaczone, czyli gra wlasciwa juz dziala
 //wylaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
             tapToStart.visible = false;// wylaczamu widocznosc napisu z menu "Tap to start the game"
             sound.visible = false;
@@ -114,21 +135,18 @@ gra.Game.prototype = {
 
             
 
-//tutaj piszemy to co dzieje sie w grze
+//main game functions running every time once again after update function is invoked
 
             //glowne funkcje gry
             this.playerMove(player);    
             this.wyswietlaniePrzebytejOdleglosci();
-            this.createEnemy();//wykonuje sie tylko gdy obiekt nie istnieje
+            this.createEnemy();//invoking only then, when an enemy object is not existing(after death of pre exisiting one, because always there will be one enemy in game )
             this.enemiesMove(enemy);//tworzy nowe obiekty asteroidy po losowych stronach ekranu   
             this.destroyCoins();
             this.iloscMonet(cash);
 
-
-            
-               
-         } else {//kiedy menu jest wlaczone i gra wlasciwa nie jest wlaczona
-//wlaczamy niektore elementy, ktore maja byc widoczne tylko w menu, zamienic na funkcje?
+         } else {//when menu is on and main game is not running
+            //turning on visibility of some elements, which should be visible only in menu
             tapToStart.visible = true;//wlaczamy napis "Tap to start the game"" w menu
             sound.visible = true;
             parsecDistanceLabel.visible = false;
@@ -228,7 +246,7 @@ gra.Game.prototype = {
     iloscMonet: function(ilosc){
         coinAmountLabel.text =  ilosc;
     },
-    collisionHandler: function(){//tutaj przechodzimy do menu zmieniajac zmienna menuWlaczone na true i wlaczajac odpowiednie animacje, oraz resetujac inne parametry
+    collisionHandler: function(){//tutaj przechodzimy do menu zmieniajac zmienna menuTurnedOn na true i wlaczajac odpowiednie animacje, oraz resetujac inne parametry
         whiteEmitter.x = player.x;
         whiteEmitter.y = player.y;
 
@@ -243,9 +261,24 @@ gra.Game.prototype = {
         player.destroy();
 
         this.destroyEnemy(enemy);
-        menuWlaczone = true;
+        menuTurnedOn = true;
         
         this.gameOverScreen();
+    },
+    magnesCollisionHandler: function(player, magneses) {
+        redEmitter.x = magneses.x
+        redEmitter.y = magneses.y
+
+        blueEmitter.x = magneses.x
+        blueEmitter.y = magneses.y
+
+        magneses.destroy();
+        // this.camera.shake(0.025, 100);
+
+        // this.camera.shake(0.01, 50);
+        redEmitter.start(true, 1000, null, 50)
+        blueEmitter.start(true, 1000, null, 50)
+        
     },
     listener: function(){//ta funkcja "slucha" czy nie zostal klkniety guzik od wyciszania i wlaczania dzwiekow
       if(soundBuffor === 1){//muzyka wlaczona
@@ -275,15 +308,17 @@ gra.Game.prototype = {
         }
     },
     destroyEnemy: function(sprite){//niszczymy obiekt wroga przy uruchomieniu menu
-        if(menuWlaczone === true && checkIfEnemyCreated === true){
+        if(menuTurnedOn === true && checkIfEnemyCreated === true){
             sprite.destroy();
             checkIfEnemyCreated = false;
          }
     },
     spawnCoin: function(){
-        if(menuWlaczone === false){
-            var random = this.rnd.integerInRange(0, 1);
-            if(random === 0)
+        if(menuTurnedOn === false){
+            let random = this.rnd.integerInRange(0, 1);
+      
+            if(random >= magnesMinChance && 
+            random <= magnesMaxChance)
                 coin = this.add.sprite(160, -100 ,'coin', 0);
             else
                 coin = this.add.sprite(480, -100 ,'coin', 0);
@@ -301,27 +336,46 @@ gra.Game.prototype = {
             coins.add(coin);
         }
    },
-        spawnMagnes: function(){
-        magnes = this.add.sprite(480, -100 ,'magnes');
-        if(menuWlaczone === false){
-            var random = this.rnd.integerInRange(0, 1);
+    spawnMagnes: function(){      
+        let magnes;
+        if(menuTurnedOn === false){
+            let random = this.rnd.integerInRange(0, 1);
             if(random === 0)
                 magnes = this.add.sprite(160, -100 ,'magnes', 0);
             else
                 magnes = this.add.sprite(480, -100 ,'magnes', 0);
 
         }    
-         
 
-            this.physics.arcade.enable(magnes);
-            magnes.enableBody = true;
-            magnes.scale.setTo(0.1);
-            magnes.anchor.setTo(0.5);
-            magnes.body.gravity.y = universeSpeed;
+        this.physics.arcade.enable(magnes);
+        magnes.enableBody = true;
+        magnes.scale.setTo(0.1);
+        magnes.anchor.setTo(0.5, 1);
+        magnes.body.gravity.y = universeSpeed;
+
+        magneses.add(magnes);
     },
-    destroyCoins: function(){//niszczy obiekty coinow, ktore docieraja do konca tla
+    startSpawning: function() {
+        let random = this.rnd.integerInRange(1, 100)
+        
+        let magnesChance = 1;
+        //spawning every object which is falling from up to bottom, e.g. coins, magnes etc.
+
+        if (random === magnesChance)
+            this.spawnMagnes(this)
+        else//otherwise spown most probably item, which is a coin   
+            this.spawnCoin(this)
+    },
+    destroyCoins: function(){//destroyin' coins which get to the bottom border of the screen, to prevent stack overflow
         coins.forEach(function(object) {
             if(object.y >= this.world.height) {
+                object.destroy();
+            }
+        }, this);
+    },
+    destroyMagneses: function() {
+        magneses.forEach(function(object) {
+            if(object.y >= this.world.height) {coins.add(coin);
                 object.destroy();
             }
         }, this);
@@ -330,14 +384,20 @@ gra.Game.prototype = {
         //dzwiek podnoszenia coina
         coinPicking.play('', 0, 1, false);
         
-        //emisja czasteczek przy kolektowaniu monet
+        //particle emission while collecting coins 
         emitter.x = coins.x; 
         emitter.y = coins.y; 
         
         coins.destroy();
         emitter.start(true, 1000, null, 20);
+        
+        let increasingValue = 1;
+        
+        //coin amount increase by 1
+        //maybe should add something(insntead of just shop from IAP)
+        //to increase amount by more than just 1 
 
-        cash += 1;
+        cash += increasingValue;
 //tutaj animacje znikania coinow i dzwieki ich podnoszenia
     },
     gameOverScreen: function(){
@@ -350,7 +410,7 @@ gra.Game.prototype = {
         
         whiteSplash.alpha = 0;
         
-        //animacje whiteSplasha
+        //whiteSplasha animation
         var tween = this.add.tween(whiteSplash).to({alpha:1}, 2000, Phaser.Easing.Linear.None, true, 0);
         
         tween.onComplete.addOnce(function(){
@@ -370,7 +430,7 @@ gra.Game.prototype = {
     resetZmiennychPoPrzegranej: function(){
         distanceParsecOld = 0;
         distanceParsecNew = 0;
-        cash =0;
+        cash = 0;
         g = 300;
     },
     zapiszIWyswietlWynik: function(){
@@ -447,7 +507,7 @@ gra.Game.prototype = {
 
 //play again, or menu?
 //wyrzucic? 
-            coinAmountTween.onComplete.addOnce(function(){
+                coinAmountTween.onComplete.addOnce(function(){
                 var retry = this.add.text((this.world.width/2), (this.world.height/2)+300);
                 retry.anchor.setTo(0.5);
                 retry.text = "Do you want to play again?"
@@ -470,7 +530,7 @@ gra.Game.prototype = {
 
     },
     createNewPlayer: function(){
-        player = this.add.sprite(160,900,'player');//x,y,nazwa z preolod
+        player = this.add.sprite(160,900,'player');//x,y,nazwa z preoload
         this.physics.arcade.enable(player);
         player.enableBody = true;
         player.body.gravity.y = - this.physics.arcade.gravity.y;//antygrawitacja- zeby nie przyspieszal, jak asteroidy

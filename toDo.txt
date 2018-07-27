@@ -1,3 +1,4 @@
+- add collecting coins function, when magnes item hA been taken
 - add magnes item sound 
 - add duration time of magnes
 - animation(spaceship resize horizontally, but just a bit)
